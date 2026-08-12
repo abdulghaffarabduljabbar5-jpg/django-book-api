@@ -1,21 +1,42 @@
 from rest_framework import serializers
-from API.models import Book , Author
+from API.models import Book , Author , Genre
+from datetime import datetime , date
 
 class BookSerializer(serializers.ModelSerializer):
+    day_since_published = serializers.SerializerMethodField()
     class Meta:
         model = Book
         fields = "__all__"
 
+    def validate_title(self,value):
+        if len(value) < 3:
+            raise serializers.ValidationError("Name should be almost 3 characters")
+        
+
+    def get_day_since_published(self, obj):
+        if obj.published_date:
+            delta = date.today() - obj.published_date
+            return delta.days
+        return None
+    
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = "__all__"
 
-
+    def validate_date(self, attr):
+        published_date = attr.get('published-date')
+        if published_date and published_date > date.today():
+            raise serializers.ValidationError("Date should not be future a future date" )
+            
 class AuthorNestedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ['id', 'name', 'bio']
+
+    def validate_name(self, value):
+        if len(value) < 3:
+            raise serializers.ValidationError("Name should be at least 3 characters long")
 
 class BookWithAuthorNameSerializer(serializers.ModelSerializer):
     author_name = serializers.StringRelatedField(source='author')
@@ -28,4 +49,18 @@ class BookFullNestedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ['id', 'title', 'author', 'published_date']
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = "__all__"
+
+class AuthorHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
+        class Meta:
+            model = Author
+            fields = ['url' , 'name' , 'bio' , 'date_of_birth']
+
+            extra_kwargs={
+                'url': {'view_name': 'author-details'}
+            }
         
