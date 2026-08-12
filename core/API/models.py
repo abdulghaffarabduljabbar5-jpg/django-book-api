@@ -1,14 +1,6 @@
 from django.db import models
 
-# Create your models here.
-class Book(models.Model):
-    title = models.CharField(max_length=20)
-    author = models.CharField(max_length=20)
-    published_date = models.DateField()
-
-    def __str__(self):
-        return self.title
-
+#create the author model for that
 class Author(models.Model):
     name = models.CharField(max_length=20)
     bio = models.TextField()
@@ -16,3 +8,12 @@ class Author(models.Model):
 
     def __str__(self):
         return self.name
+
+# Create your models here.
+class Book(models.Model):
+    title = models.CharField(max_length=50)
+    author = models.ForeignKey(Author , on_delete=models.CASCADE, related_name='books')
+    published_date = models.DateField()
+
+    def __str__(self):
+        return self.title
