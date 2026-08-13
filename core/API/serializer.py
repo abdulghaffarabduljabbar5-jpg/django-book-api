@@ -11,13 +11,24 @@ class BookSerializer(serializers.ModelSerializer):
     def validate_title(self,value):
         if len(value) < 3:
             raise serializers.ValidationError("Name should be almost 3 characters")
-        
+        return value
+
+    def validate(self, attrs):
+        """Object-level validation: ensure published_date is not in the future."""
+        published_date = attrs.get('published_date')
+        if published_date and published_date > date.today():
+            raise serializers.ValidationError({
+                "non_field_errors": ["Cannot be a future date"]
+            })
+        return attrs
 
     def get_day_since_published(self, obj):
-        if obj.published_date:
-            delta = date.today() - obj.published_date
-            return delta.days
-        return None
+        """Return number of days since the book was published (int)."""
+        published_date = getattr(obj, 'published_date', None)
+        if not published_date:
+            return 0
+        delta = date.today() - published_date
+        return delta.days
     
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
