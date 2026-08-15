@@ -23,5 +23,6 @@ urlpatterns = [
     path('book/', include('API.urls')) ,
     path('author/' , include('API.urls')),
     path('api/', include('API.urls')),
-    path('genre/', include('API.urls'))
+    path('genre/', include('API.urls')),
+    path('', include('API.urls'))
 ]
