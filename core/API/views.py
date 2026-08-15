@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from API.models import Book , Author , Genre
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view 
+from rest_framework import viewsets
 from API.serializer import BookSerializer , AuthorSerializer , BookFullNestedSerializer, BookWithAuthorNameSerializer , GenreSerializer , AuthorHyperlinkedSerializer
 from rest_framework import generics
 # Create your views here.
@@ -28,16 +29,21 @@ class BookDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
-#serializer for the author list and detail
-class AuthorList(generics.ListCreateAPIView):
+#Now we will use the second method that is viewset method
+class AuthorLCU(viewsets.ModelViewSet):
     queryset = Author.objects.all()
-    # serializer_class = AuthorSerializer
-    serializer_class = AuthorHyperlinkedSerializer
+    serializer_class = AuthorSerializer
 
-class AuthorDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Author.objects.all()
-    # serializer_class = AuthorSerializer
-    serializer_class = AuthorHyperlinkedSerializer
+# #serializer for the author list and detail
+# class AuthorList(generics.ListCreateAPIView):
+#     queryset = Author.objects.all()
+#     # serializer_class = AuthorSerializer
+#     serializer_class = AuthorHyperlinkedSerializer
+
+# class AuthorDetails(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Author.objects.all()
+#     # serializer_class = AuthorSerializer
+#     serializer_class = AuthorHyperlinkedSerializer
 
 class BookLevel1View(generics.ListAPIView):
     queryset = Book.objects.all()
@@ -50,3 +56,4 @@ class BookLevel2View(generics.ListAPIView):
 class GenereList(generics.ListCreateAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    
