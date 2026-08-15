@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from API.models import Book , Author , Genre
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view 
 from rest_framework import viewsets
@@ -29,10 +31,46 @@ class BookDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
+#Now we will use the another method that is viewset method 
+
+class AuthorVS(viewsets.ViewSet):
+    def list(self , request):
+        queryset = Author.objects.all()
+        serializer = AuthorSerializer(queryset , many=True , context = {'request': request} )
+        return Response(serializer.data)
+    def create(self , request):
+        serializer = AuthorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data , status=status.HTTP_201_CREATED)
+        return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+    
+    def retrieve(self, request , pk=None):
+        queryset = Author.objects.all()
+        author = get_object_or_404(queryset , pk=pk)
+        serializer = AuthorSerializer(author ,context = {'request': request} )
+        return Response(serializer.data)
+
+    def update(self,  request , pk=None):
+        queryset = Author.objects.all()
+        author = get_object_or_404(queryset , pk=pk)
+        serializer = AuthorSerializer(author , context = {'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request , pk=None):
+        queryset = Author.objects.all()
+        author = get_object_or_404(queryset , pk=pk)
+        author.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        
 #Now we will use the second method that is viewset method
-class AuthorLCU(viewsets.ModelViewSet):
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
+# class AuthorLCU(viewsets.ModelViewSet):
+#     queryset = Author.objects.all()
+#     serializer_class = AuthorSerializer
 
 # #serializer for the author list and detail
 # class AuthorList(generics.ListCreateAPIView):
