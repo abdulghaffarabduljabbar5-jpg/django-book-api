@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from API.models import Book , Author , Genre
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -27,6 +28,8 @@ from rest_framework import generics
 class BookList(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['title' , 'author']
 
 class BookDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
@@ -81,14 +84,7 @@ class AuthorLCU(viewsets.ModelViewSet):
     def stats(self , request , pk=None):
         author = self.get_object()
         return Response({"words": 50000 , "days_old": 1000})
-
-    @action(detail=False, methods=['get'])
-    def featured(self, request):  
-        featured = Author.objects.filter(is_featured=True)
-        serializer = AuthorSerializer(featured, many=True)
-        return Response(serializer.data)
-
-      
+    
 
 # #serializer for the author list and detail
 # class AuthorList(generics.ListCreateAPIView):
