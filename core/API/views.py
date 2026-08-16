@@ -2,7 +2,7 @@ from django.shortcuts import render
 from API.models import Book , Author , Genre
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend 
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter , OrderingFilter
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -32,8 +32,11 @@ class BookList(generics.ListCreateAPIView):
     # filter_backends = [DjangoFilterBackend]
     # filterset_fields = ['title' , 'author']
 
-    filter_backends = [SearchFilter]
-    search_fields = ['title', 'author__name']
+    # filter_backends = [SearchFilter]
+    # search_fields = ['title', 'author__name']
+
+    filter_backends = [OrderingFilter]
+    search_fields = ['title' , 'author']
 
 class BookDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
