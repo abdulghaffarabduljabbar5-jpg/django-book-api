@@ -1,9 +1,9 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from API.views import BookLevel2View, BookList , BookDetails , AuthorVS,  BookLevel1View , BookLevel2View , GenereList
+from API.views import BookLevel2View, BookList , BookDetails , AuthorLCU,  BookLevel1View , BookLevel2View , GenereList
 
 router = DefaultRouter()
-router.register(r'authors' , AuthorVS , basename='author')
+router.register(r'authors' , AuthorLCU , basename='author')
 
 urlpatterns = [
     path('books/' , BookList.as_view() , name='Book-list'),
