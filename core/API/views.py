@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from API.models import Book , Author , Genre
 from rest_framework import status
-from django_filters.rest_framework import DjangoFilterBackend 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter , OrderingFilter
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view 
+from .filters import BookFilterSet, ComplexLogicFilterBackend
 from rest_framework import viewsets
 from API.serializer import BookSerializer , AuthorSerializer , BookFullNestedSerializer, BookWithAuthorNameSerializer , GenreSerializer , AuthorHyperlinkedSerializer
 from rest_framework import generics
@@ -29,14 +30,39 @@ from rest_framework import generics
 class BookList(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = BookFilterSet
+
+    # filter_backends = [
+    #     ComplexLogicFilterBackend, 
+    #     DjangoFilterBackend,       
+    #     SearchFilter,              
+    #     OrderingFilter             
+    # ]
+    
+    def get_queryset(self):
+        queryset = Book.objects.all()
+        user = self.request.user
+
+        # Run your custom filter logic safely here
+        if user.is_anonymous:
+            if hasattr(Book, 'status'):
+                queryset = queryset.filter(status='published')
+                
+        return queryset
+   
+
+    # search_fields = ['title' , 'author']
+    # ordering_fields = ['title' , 'published_date']
+    
     # filter_backends = [DjangoFilterBackend]
     # filterset_fields = ['title' , 'author']
 
     # filter_backends = [SearchFilter]
     # search_fields = ['title', 'author__name']
 
-    filter_backends = [OrderingFilter]
-    search_fields = ['title' , 'author']
+  
 
 class BookDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
