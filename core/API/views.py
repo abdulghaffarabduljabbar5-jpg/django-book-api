@@ -4,7 +4,7 @@ from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter , OrderingFilter 
 from django.shortcuts import get_object_or_404
-from .pagination import BookLOPagination , BookPNPagination
+from .pagination import BookLOPagination , BookPNPagination , BookCPagination
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view 
@@ -35,7 +35,8 @@ class BookList(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = BookFilterSet
     # pagination_class = BookLOPagination
-    pagination_class = BookPNPagination
+    # pagination_class = BookPNPagination
+    pagination_class = BookCPagination
     # filter_backends = [
     #     ComplexLogicFilterBackend, 
     #     DjangoFilterBackend,       
