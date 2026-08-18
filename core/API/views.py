@@ -29,7 +29,7 @@ from rest_framework import generics
 #         return Response(serializer.errors)
 
 class BookList(generics.ListCreateAPIView):
-    queryset = Book.objects.all()
+    queryset = Book.objects.all().select_related('author').prefetch_related('genres')
     serializer_class = BookSerializer
 
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -46,13 +46,9 @@ class BookList(generics.ListCreateAPIView):
     # ]
     
     def get_queryset(self):
-        queryset = Book.objects.all()
+        # queryset = Book.objects.all()
+        queryset = self.queryset
         user = self.request.user
-
-        # Run your custom filter logic safely here
-        if user.is_anonymous:
-            if hasattr(Book, 'status'):
-                queryset = queryset.filter(status='published')
                 
         return queryset
    

@@ -6,7 +6,7 @@ class BookLOPagination(LimitOffsetPagination):
 
 class BookPNPagination(PageNumberPagination):
     page_query_param = 'p'
-    page_size = 5
+    page_size = 15
 
     page_size_query_param = 'size'
     max_page_size = 100
