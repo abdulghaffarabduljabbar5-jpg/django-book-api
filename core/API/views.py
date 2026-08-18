@@ -35,8 +35,9 @@ class BookList(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = BookFilterSet
     # pagination_class = BookLOPagination
-    # pagination_class = BookPNPagination
-    pagination_class = BookCPagination
+    pagination_class = BookPNPagination
+    ordering = ['id']
+    # pagination_class = BookCPagination
     # filter_backends = [
     #     ComplexLogicFilterBackend, 
     #     DjangoFilterBackend,       
