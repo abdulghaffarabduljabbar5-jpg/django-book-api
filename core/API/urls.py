@@ -9,7 +9,8 @@ from API.views import (
 from rest_framework.authtoken import views as drf_token_views
 from API.views import ValidateTokenView
 from django.urls import include , path
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView , TokenRefreshView  ,    TokenBlacklistView
+from .serializer import MyTokenObtainPairView
 
 router = DefaultRouter()
 router.register(r'authors' , AuthorLCU , basename='author')
@@ -26,11 +27,15 @@ urlpatterns = [
 
     path('lists/', GenereList.as_view() , name='genre-list' ),
 
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('api/token/generate/', drf_token_views.obtain_auth_token),
     path('token/validate/', ValidateTokenView.as_view()),
 
-    path('auth/' , include('rest_framework.urls'))
+    path('auth/' , include('rest_framework.urls')),
+
+    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/logout/', TokenBlacklistView.as_view(), name='token_blacklist')
 ]
 
 urlpatterns +=router.urls

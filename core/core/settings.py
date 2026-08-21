@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'API',
     'django_filters',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist'
 
 ]
 
@@ -144,4 +145,13 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
+}
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),       # Access token expires in 15 mins
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),         # Refresh token lasts 7 days
+    'ROTATE_REFRESH_TOKENS': True,                       # Issue a new refresh token when used
+    'BLACKLIST_AFTER_ROTATION': True,                    # Old refresh token is blacklisted immediately
+    'AUTH_HEADER_TYPES': ('Bearer',),                    # Enforces the 'Bearer <token>' prefix you used
 }
