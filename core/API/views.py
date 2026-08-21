@@ -1,13 +1,17 @@
+from django.http import request
 from django.shortcuts import render
 from API.models import Book , Author , Genre
 from rest_framework import status
+from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter , OrderingFilter 
 from django.shortcuts import get_object_or_404
 from .pagination import BookLOPagination , BookPNPagination , BookCPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view 
+from rest_framework.authtoken.models import Token
 from .filters import BookFilterSet, ComplexLogicFilterBackend
 from rest_framework import viewsets
 from API.serializer import BookSerializer , AuthorSerializer , BookFullNestedSerializer, BookWithAuthorNameSerializer , GenreSerializer , AuthorHyperlinkedSerializer
@@ -37,6 +41,7 @@ class BookList(generics.ListCreateAPIView):
     # pagination_class = BookLOPagination
     pagination_class = BookPNPagination
     ordering = ['id']
+
     # pagination_class = BookCPagination
     # filter_backends = [
     #     ComplexLogicFilterBackend, 
@@ -44,7 +49,7 @@ class BookList(generics.ListCreateAPIView):
     #     SearchFilter,              
     #     OrderingFilter             
     # ]
-    
+    permission_classes = [IsAuthenticated]
     def get_queryset(self):
         # queryset = Book.objects.all()
         queryset = self.queryset
@@ -62,12 +67,20 @@ class BookList(generics.ListCreateAPIView):
     # filter_backends = [SearchFilter]
     # search_fields = ['title', 'author__name']
 
-  
-
 class BookDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
+class ValidateTokenView(APIView):
+    def get(self , request):
+        permission_classes = IsAuthenticated
+        return Response({
+            "valid": True,
+            "user_name": request.user.username,
+            "email": request.user.email,
+        }, status=status.HTTP_200_OK)
+
+    
 #Now we will use the another method that is viewset method 
 
 # class AuthorVS(viewsets.ViewSet):

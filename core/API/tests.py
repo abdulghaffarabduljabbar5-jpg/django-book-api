@@ -53,10 +53,13 @@
 #         self.assertEqual(response.status_code , status.HTTP_204_NO_CONTENT)
 
 
-from datetime import date
+from datetime import date, timedelta
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import get_user_model
 from API.models import Book, Author , Genre
 # 1. IMPORT YOUR SERIALIZERS
 from API.serializer import BookSerializer 
@@ -139,5 +142,22 @@ class BookValidationTest(APITestCase):
         serializer = BookSerializer(data=payload)
         
         self.assertFalse(serializer.is_valid())
-        self.assertIn('non_field_errors', serializer.errors) 
+        self.assertIn('non_field_errors', serializer.errors)
+
+
+class TokenExpiryTest(APITestCase):
+    def test_token_expires_after_one_minute(self):
+        User = get_user_model()
+        user = User.objects.create_user(username='tokenuser', password='secret123')
+        token = Token.objects.create(user=user)
+
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        response = self.client.get(reverse('Book-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        token.created = timezone.now() - timedelta(minutes=2)
+        token.save(update_fields=['created'])
+
+        response = self.client.get(reverse('Book-list'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
       

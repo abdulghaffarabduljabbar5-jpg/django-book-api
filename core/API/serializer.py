@@ -12,7 +12,7 @@ class BookSerializer(serializers.ModelSerializer):
         if len(value) < 3:
             raise serializers.ValidationError("Name should be almost 3 characters")
         return value
-# https://vkvideo.ru/video879390562_456239284
+
 
     def validate(self, attrs):
         """Object-level validation: ensure published_date is not in the future."""
@@ -30,6 +30,7 @@ class BookSerializer(serializers.ModelSerializer):
             return 0
         delta = date.today() - published_date
         return delta.days
+   
     
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
