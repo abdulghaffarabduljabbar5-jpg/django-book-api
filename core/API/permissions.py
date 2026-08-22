@@ -65,3 +65,13 @@ class IPWatchListPermissions(permissions.BasePermission):
     def has_permission(self, request, view):
         ip = self.get_client_ip(request)
         return ip in self.ALLOWED_IPS
+
+class ReadOnlyOrStaffPermissions(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        else:
+            return bool(
+                request.user and request.user.is_authenticated
+                and getattr(request.user , 'role' , None) in ['admin' , 'staff']
+            )
