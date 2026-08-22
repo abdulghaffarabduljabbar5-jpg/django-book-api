@@ -19,6 +19,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
+
 class BookSerializer(serializers.ModelSerializer):
     day_since_published = serializers.SerializerMethodField()
     class Meta:
